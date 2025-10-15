@@ -50,7 +50,7 @@
         </section>
         <section class="card">
           <h2>오늘의 칭찬</h2>
-          <input id="praise" type="text" placeholder=" ~칭찬한다!" maxlength="80" />
+          <input id="praise" type="text" placeholder=" ...칭찬한다" maxlength="80" />
           <div class="row" style="margin-top:10px">
             <button class="btn primary grow" id="nextToDiary" type="button">다음</button>
           </div>
@@ -67,8 +67,8 @@
             <div class="counter"><span id="charCount">0</span>자</div>
           </div>
           <div class="row" style="margin-top:10px">
-            <button class="btn primary grow" id="saveBtn" type="button">저장</button>
-            <button class="btn grow" id="summBtn" type="button">AI 요약</button>
+            <button class="btn primary grow" id="saveBtn" type="button">저장 하기</button>
+            <button class="btn grow" id="summBtn" type="button">요약 보기</button>
             <button class="btn grow" id="delBtn" type="button" style="color:var(--danger);border-color:#ffd4d4;background:#fff5f5">기록 삭제</button>
           </div>
 
@@ -82,7 +82,7 @@
       <!-- 4) 기록 + 통계 -->
       <section id="viewRecords" class="view">
         <section class="card">
-          <h2>기록 & 통계</h2>
+          <h2>기록</h2>
           <div class="stats" id="statsBox" style="margin-bottom:10px"></div>
           <div id="entries"></div>
         </section>
@@ -97,12 +97,13 @@
       <button class="tabbtn active" data-tab="Calendar" type="button">캘린더</button>
       <button class="tabbtn" data-tab="Mood" type="button">감정</button>
       <button class="tabbtn" data-tab="Diary" type="button">일기</button>
-      <button class="tabbtn" data-tab="Records" type="button">기록·통계</button>
+      <button class="tabbtn" data-tab="Records" type="button">기록</button>
     </div>
   </div>
 
   <script src="app.js?v=rev3"></script>
 </body>
 </html>
+
 
 
