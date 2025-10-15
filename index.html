@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#a684ff" />
+  <title>DailyMyDay — 감성 일기 (모바일 우선)</title>
+
+  <!-- OpenAI 프록시 (네 Cloudflare Workers 주소로 변경 가능) -->
+  <meta name="proxy-url" content="https://apikey.wldjs6509.workers.dev">
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="hdr">
+      <div class="brand">DailyMyDay</div>
+      <div class="today-pill" id="todayPill"></div>
+    </header>
+
+    <!-- ====== VIEWS ====== -->
+    <!-- 1) 캘린더 -->
+    <section id="viewCalendar" class="view active">
+      <section class="card">
+        <div class="monthbar" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div class="nav" style="display:flex;gap:8px">
+            <button class="btn" id="prevMonth" type="button">◀︎ 이전</button>
+            <button class="btn" id="nextMonth" type="button">다음 ▶︎</button>
+          </div>
+          <div><strong id="monthLabel">2025-10</strong></div>
+        </div>
+        <div class="calendar" id="calendarHead">
+          <div class="dow">일</div><div class="dow">월</div><div class="dow">화</div><div class="dow">수</div>
+          <div class="dow">목</div><div class="dow">금</div><div class="dow">토</div>
+        </div>
+        <div class="calendar" id="calendarGrid" style="margin-top:6px"></div>
+        <div class="muted" style="margin-top:8px">날짜를 누르면 감정 → 일기 흐름으로 이동해요.</div>
+      </section>
+    </section>
+
+    <!-- 2) 감정/칭찬 -->
+    <section id="viewMood" class="view">
+      <section class="card">
+        <h2>감정 선택</h2>
+        <div class="moods" id="moodGrid" style="margin:8px 0 6px"></div>
+        <div class="muted">감정을 눌러서 선택하세요. 선택된 칸은 보랏빛으로 표시됩니다.</div>
+      </section>
+      <section class="card">
+        <h2>자기 칭찬 한 줄</h2>
+        <input id="praise" type="text" placeholder="오늘 나는 ○○를 해냈다!" maxlength="80" />
+        <div class="row" style="margin-top:10px">
+          <button class="btn primary grow" id="nextToDiary" type="button">다음 → 일기</button>
+        </div>
+      </section>
+    </section>
+
+    <!-- 3) 일기 -->
+    <section id="viewDiary" class="view">
+      <section class="card">
+        <h2 id="editorTitle">오늘(—) 일기</h2>
+        <div style="margin-top:8px">
+          <label class="muted">하루 일기</label>
+          <textarea id="diary" placeholder="하루를 감성적으로 기록해보세요. (로컬 저장)"></textarea>
+          <div class="counter"><span id="charCount">0</span>자</div>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn primary grow" id="saveBtn" type="button">저장</button>
+          <button class="btn grow" id="summBtn" type="button">AI 요약</button>
+          <button class="btn grow" id="delBtn" type="button" style="color:var(--danger);border-color:#ffd4d4;background:#fff5f5">기록 삭제</button>
+        </div>
+
+        <div class="entry" id="summaryBox" style="display:none;margin-top:10px">
+          <div class="meta"><span class="chip">AI 요약</span><span id="summaryTime" class="muted"></span></div>
+          <div id="summaryText" style="margin-top:6px;white-space:pre-wrap"></div>
+        </div>
+      </section>
+    </section>
+
+    <!-- 4) 기록 + 통계 -->
+    <section id="viewRecords" class="view">
+      <section class="card">
+        <h2>기록 & 통계</h2>
+        <div class="stats" id="statsBox" style="margin-bottom:10px"></div>
+        <div id="entries"></div>
+      </section>
+    </section>
+    <!-- ====== /VIEWS ====== -->
+  </div>
+
+  <!-- 하단 고정 탭바 -->
+  <div class="dock">
+    <div class="tabs">
+      <button class="tabbtn active" data-tab="Calendar" type="button">캘린더</button>
+      <button class="tabbtn" data-tab="Mood" type="button">감정·칭찬</button>
+      <button class="tabbtn" data-tab="Diary" type="button">일기</button>
+      <button class="tabbtn" data-tab="Records" type="button">기록·통계</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
