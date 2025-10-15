@@ -438,3 +438,87 @@ function init(){
   bindDiaryButtons();
 }
 init();
+
+// ===== Keyboard handling (modern browsers, visualViewport) =====
+(function setupKeyboardHandling(){
+  const vv = window.visualViewport;
+
+  // 스크롤 가능한 부모 찾기
+  const isScrollable = (el) => {
+    if (!el) return false;
+    const s = getComputedStyle(el);
+    return /(auto|scroll)/.test(s.overflow + s.overflowY + s.overflowX);
+  };
+  const getScrollParent = (el) => {
+    let p = el?.parentElement;
+    while (p && p !== document.body) {
+      if (isScrollable(p)) return p;
+      p = p.parentElement;
+    }
+    return document.scrollingElement || document.documentElement;
+  };
+
+  // 키보드 높이만큼 하단 padding 주기 + 하단바 토글
+  const apply = () => {
+    if (!vv) return;
+    const gap = Math.max(0, window.innerHeight - vv.height);
+    document.documentElement.style.setProperty('--kb-gap', gap + 'px');
+    document.body.classList.toggle('kb-open', gap > 0);
+  };
+
+  if (vv) {
+    vv.addEventListener('resize', apply);
+    vv.addEventListener('scroll', apply);
+    window.addEventListener('resize', apply);
+    apply();
+  }
+
+  // 입력이 가려지면 겹친 만큼만 스크롤
+  const ensureVisible = (el) => {
+    if (!el) return;
+    const parent = getScrollParent(el);
+    const rect = el.getBoundingClientRect();
+    const topInset  = vv ? vv.offsetTop : 0;                          // 주소창/안전 영역
+    const vvHeight  = vv ? vv.height    : window.innerHeight;
+    const bottomEdge = topInset + vvHeight;
+
+    const overlapDown = (rect.bottom + 12) - bottomEdge;
+    const overlapUp   = topInset - (rect.top - 12);
+
+    let delta = 0;
+    if (overlapDown > 0) delta = overlapDown;
+    else if (overlapUp > 0) delta = -overlapUp;
+
+    if (delta !== 0) {
+      if (parent && parent !== document.body && parent !== document.documentElement) {
+        parent.scrollBy({ top: delta, behavior: 'smooth' });
+      } else {
+        window.scrollBy({ top: delta, behavior: 'smooth' });
+      }
+    }
+  };
+
+  const editableSelector = [
+    'input[type="text"]','input[type="search"]','input[type="email"]',
+    'input[type="number"]','input[type="tel"]','textarea','[contenteditable="true"]',
+    '#chatInput','#diary','#praise'
+  ].join(',');
+
+  document.addEventListener('focusin', (e)=>{
+    if (e.target.matches(editableSelector)) setTimeout(()=> ensureVisible(e.target), 80);
+  });
+  document.addEventListener('click', (e)=>{
+    const el = e.target.closest(editableSelector);
+    if (el) setTimeout(()=> ensureVisible(el), 80);
+  });
+
+  // 탭 전환 이후에도 포커스가 남아있으면 보정
+  const origShowTab = showTab;
+  window.showTab = function(name){
+    origShowTab(name);
+    const active = document.activeElement;
+    if (active && active.matches && active.matches(editableSelector)) {
+      setTimeout(()=> ensureVisible(active), 120);
+    }
+  };
+})();

@@ -3,11 +3,12 @@
   --primary:#a684ff; --primary-weak:#ece5ff; --danger:#ef4444;
   --radius:16px; --shadow:0 10px 28px rgba(0,0,0,.08);
   --gap:clamp(8px, 2.5vw, 12px);
-  --dock-h:64px;
   --fs-base:clamp(14px, 3.6vw, 16px);
   --fs-sm:clamp(12px, 3.2vw, 14px);
   --fs-lg:clamp(18px, 4.6vw, 22px);
   --tap:44px;
+  --dock-h:64px;      /* 하단바 높이 */
+  --kb-gap:0px;       /* JS에서 주입(visualViewport) */
 }
 *{box-sizing:border-box}
 html,body{
@@ -15,8 +16,12 @@ html,body{
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,Noto Sans KR,sans-serif;
   font-size:var(--fs-base);
 }
+body{ padding-bottom: var(--kb-gap); }
+
 .app{
   max-width:900px; margin:0 auto;
+  min-height:100dvh; display:flex; flex-direction:column;
+  /* 평소에는 하단바 공간만큼 여유 */
   padding:clamp(10px,2.6vw,16px) clamp(10px,2.6vw,16px)
           calc(var(--dock-h) + env(safe-area-inset-bottom) + var(--gap));
 }
@@ -78,13 +83,14 @@ textarea, input[type="text"]{
 .stat .k{font-size:var(--fs-sm);color:var(--sub)}
 .stat .v{font-size:clamp(16px,4.2vw,18px);font-weight:800}
 
-/* 하단 탭바 */
+/* 하단 탭바 (복구) */
 .dock{
   position:fixed; left:0; right:0; bottom:0;
   backdrop-filter:saturate(180%) blur(6px);
   background:rgba(255,255,255,.9); border-top:1px solid #eee;
   padding:8px 12px calc(8px + env(safe-area-inset-bottom));
   transition: transform .22s ease, opacity .22s ease;
+  display:block !important; /* 혹시 이전 규칙이 있어도 이게 이김 */
 }
 .dock .tabs{max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .tabbtn{
@@ -93,18 +99,22 @@ textarea, input[type="text"]{
 }
 .tabbtn.active{background:var(--primary-weak);border-color:#cfc3ff;font-weight:700;color:#5a45b8}
 
-@media (min-width:600px){
-  .app{padding:16px 16px calc(var(--dock-h) + env(safe-area-inset-bottom) + var(--gap))}
-  #diary{height:38svh}
-  #praise{height:16svh}
-}
-@media (min-width:900px){
-  .app{padding:20px 20px calc(var(--dock-h) + env(safe-area-inset-bottom) + var(--gap))}
-}
-
+/* 뷰 전환 */
 .view{display:none}
 .view.active{display:block}
 
-/* 키보드 열리면 하단바 숨기기 */
+/* 키보드 열리면: 하단바 내리고, 하단 여유 줄이기 */
 body.kb-open .dock{ transform: translateY(120%); opacity:0; pointer-events:none; }
 body.kb-open .app{ padding-bottom: clamp(10px,2.6vw,16px); }
+
+/* 스크롤 컨테이너 */
+.chat-list{ flex:1 1 auto; overflow:auto; -webkit-overflow-scrolling:touch; }
+
+/* 반응형 */
+@media (min-width:600px){
+  #diary{height:38svh}
+  #praise{height:16svh}
+}
+
+
+
